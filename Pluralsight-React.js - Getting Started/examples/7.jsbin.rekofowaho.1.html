@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2015 by anonymous (http://jsbin.com/rekofowaho/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>02_03-Build a Github Card Component.mp4</title>
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script src="https://fb.me/react-0.13.3.js"></script>
+    <script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/jsx">
+    /*
+    目的:用user card範例, 可自行輸入使用者名稱, 然後顯示使用者的大頭card
+    作法:
+    1. 建立Form元件, 並含input及button, 並可使用onSubmit執行add的動作
+    2. 建立handleSubmit處理add動作
+    3. handleSubmit呼叫addCard新增使用者資料
+    學習結果:
+    1. 學會建立form
+    2. 學會使用input中建立ref, 並使用React.findDOMNode來取得該ref, 並取出該ref對應的input中的輸入值
+    3. 使用setState動態加入資料
+    */
+    var Card = React.createClass({
+        getInitialState: function() {
+            return {};
+        },
+        componentDidMount: function() {
+            var component = this;
+            $.get('https://api.github.com/users/' + this.props.login, function(data) {
+                component.setState(data);
+            });
+        },
+        render: function() {
+            return (
+              <div>
+                <img src={this.state.avatar_url}/>
+                <h3>{this.state.name}</h3>
+                <hr/>
+              </div>
+            )
+        }
+    });
+    
+    var Form = React.createClass({
+        handleSubmit: function(e) {
+            e.preventDefault();
+            var loginInput = React.findDOMNode(this.refs.login);
+            this.props.addCard(loginInput.value);
+            loginInput.value = '';
+        },
+        render: function() {
+            return (
+              <form onSubmit={this.handleSubmit}>
+                <input placeholder="github login" ref="login"/>
+                <button>Add</button>
+              </form>
+            )
+        }
+    });
+    
+    var Main = React.createClass({
+        getInitialState: function() {
+          return {logins: []};
+        },
+        addCard: function(loginToAdd) {
+            this.setState({logins: this.state.logins.concat(loginToAdd)});
+        },
+        render: function() {
+        var cards = this.state.logins.map(function(login) {
+          return (<Card login={login}/>)
+        });
+        
+        return (<div>
+            <Form addCard={this.addCard}/>
+            {cards}
+            </div>)
+        }
+    });
+    
+    React.render(<Main />, document.getElementById("root"));
+
+    </script>
+  </body>
+</html>

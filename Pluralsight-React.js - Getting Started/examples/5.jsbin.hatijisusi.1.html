@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2015 by anonymous (http://jsbin.com/hatijisusi/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>02_02-Build a Github Card Component.mp4</title>
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script src="https://fb.me/react-0.13.3.js"></script>
+    <script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    123
+    <script type="text/jsx">
+    /*
+    目的: 使用componentDidMount建立ajax取得github資料來顯示user card
+    作法:
+    1. 建立card元件, 並使用componentDidMount, 在建立元件時以ajax去github取資料
+    2. 建立2張以上的card, 以this.props的方式, 將login的name帶入以取得使用者資料.
+    3. 在ajax取得資料後, 使用setState將資料存入state
+    4. 使用存入state的值來取得圖片畫面和姓名資料
+    學習結果:
+    1. 學會使用componentDidMount以ajax去remote取資料
+    */
+    var Card = React.createClass({
+        getInitialState: function() {
+            return {};
+        },
+        componentDidMount: function() {
+            var component = this;
+            $.get('https://api.github.com/users/' + this.props.login, function(data) {
+                component.setState(data);
+            });
+        },
+        render: function() {
+            return (
+              <div>
+                <img src={this.state.avatar_url}/>
+                <h3>{this.state.name}</h3>
+                <hr/>
+              </div>
+            )
+        }
+    });
+    
+    var Main = React.createClass({
+        render: function() {
+        return (<div>
+            <Card login="petehunt"/>
+            <Card login="mrtony"/>
+            </div>)
+        }
+    });
+    
+    React.render(<Main />, document.getElementById("root"));
+
+    </script>
+  </body>
+</html>

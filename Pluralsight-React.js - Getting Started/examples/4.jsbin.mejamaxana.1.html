@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2015 by anonymous (http://jsbin.com/mejamaxana/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello React</title>
+    <script src="https://fb.me/react-0.13.3.js"></script>
+    <script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/jsx">
+    /*
+    目的: 使用button元件建立4個
+    作法:
+    1. 透過元件可重覆使用的特性, 在render時用4個Button元件.
+    2. 每個Button再傳入不同的新的props -> increment : <Button localHandleClick={this.handleClick} increment={100}/>
+    3. 修改Button元件,在onClick不直接呼叫props的handler(因為這裡的one way binding不能帶參數), 先建立一個自己的handler, click後去執行它, 並將props.increment傳送給props.localHandleClick
+    4. localHandleClicko會去呼叫handleClick, 並帶入參數props.increment.
+    5. 在handleClick中, 會去做this.state.increment+傳入的increment
+    學習結果:
+    1. 學會如何傳參數
+    */
+    var Button = React.createClass({
+        localHandleClick: function() {
+            this.props.localHandleClick(this.props.increment);
+        },
+        render: function() {
+            return (
+                <button onClick={this.localHandleClick}>+{this.props.increment}</button>
+            )
+        }
+    });
+    
+    var Result = React.createClass({
+    render: function() {
+        return (<div>{this.props.localCounter}</div>)
+    }
+    });
+    
+    var Main = React.createClass({
+        getInitialState: function() {
+            return {counter: 0};
+        },
+        handleClick: function(increment) {
+            this.setState({counter: this.state.counter+increment});
+        },
+        render: function() {
+        return (<div>
+            <Button localHandleClick={this.handleClick} increment={1}/>
+            <Button localHandleClick={this.handleClick} increment={5}/>
+            <Button localHandleClick={this.handleClick} increment={10}/>
+            <Button localHandleClick={this.handleClick} increment={100}/>
+            <Result localCounter={this.state.counter}/>
+            </div>)
+        }
+    });
+    
+    React.render(<Main />, document.getElementById("root"));
+
+    </script>
+  </body>
+</html>

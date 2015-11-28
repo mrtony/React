@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2015 by anonymous (http://jsbin.com/fupuyidaho/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>02_02-Build a Github Card Component.mp4</title>
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script src="https://fb.me/react-0.13.3.js"></script>
+    <script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/jsx">
+    /*
+    目的:用user card範例, 以類似ng-repeat方式建立card
+    作法:
+    1. 使用getInitialState建立一個user login array.
+    2. 建立一個變數cards以array建立Card.
+    3. 用cards建立DOM
+    學習結果:
+    1. 學會使用類似ng-repeat方式建立DOM
+    */
+    var Card = React.createClass({
+        getInitialState: function() {
+            return {};
+        },
+        componentDidMount: function() {
+            var component = this;
+            $.get('https://api.github.com/users/' + this.props.login, function(data) {
+                component.setState(data);
+            });
+        },
+        render: function() {
+            return (
+              <div>
+                <img src={this.state.avatar_url}/>
+                <h3>{this.state.name}</h3>
+                <hr/>
+              </div>
+            )
+        }
+    });
+    
+    var Main = React.createClass({
+        getInitialState: function() {
+          return {logins: ['petehunt', 'mrtony']};
+        },
+        render: function() {
+        var cards = this.state.logins.map(function(login) {
+          return (<Card login={login}/>)
+        });
+        
+        return (<div>
+            {cards}
+            </div>)
+        }
+    });
+    
+    React.render(<Main />, document.getElementById("root"));
+
+    </script>
+  </body>
+</html>
