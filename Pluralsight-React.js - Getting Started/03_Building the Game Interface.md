@@ -39,8 +39,9 @@
 20. redraw - 當沒有數字可以再選時要如何重新game? 在button-frame加入一個button做redraw. 只有usedNumbers不清除. 所以可以一直redraw直到全部數字用完.
 21. 要限定只能redraw 5次才會好玩. 加入redraws次數為5, 並在button-frame加入顯示redraws次數. 而redraw函數也會檢查是否到0了. 不為0時redraws會減1並redraw直到0為止. 
 22. 加上game over的doneStatus(string)及done-frame. 使用doneStatus來判斷, 沒game over時顯示numbers-frame, game over時顯示done-frame, 必需要變數(buttonFrame)來畫這個frame.
-23. 如何結束game? 設計一個updateDoneStatus, 內容是檢查usedNumbers的9個數字都被用了(length=9). 另一個是resraws次數為0且沒有可能的數字組合可用. 會用到`http://bit.ly/s-pcs`的`possibleCombinationSum(array, number)`,它會去判斷傳入的數字陣列中, 是否有可能組合出number的數字.
+23. 如何結束game? 設計一個updateDoneStatus, 內容是檢查usedNumbers的9個數字都被用了(length=9). 另一個是resraws次數為0且沒有可能的數字組合可用. 會用到`https://gist.github.com/samerbuna/aa1f011a6e42d6deba46`的`possibleCombinationSum(array, number)`,它會去判斷傳入的數字陣列中, 是否有可能組合出number的數字.
 24. 什麼時機去call updateDoneStatus? 在acceptAnswer和redraw時都要檢查. 使用方式是用`setState`的第二個參數, 它會在執行完setState去執行它.
 25. 設計`Play Again`機制. 在done-frame中加入play again button. 在按了它後, 會執行`this.replaceState(this.getInitialState());`, 它會清除掉所有的state重置後重新執行.
 
-以上的[設計範例在此](http://plnkr.co/edit/AVfJZ2aum78bX2HVc48a?p=preview)
+以上[範例程式](http://plnkr.co/edit/AVfJZ2aum78bX2HVc48a)
+

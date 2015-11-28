@@ -1,3 +1,22 @@
+    //bit.ly/s-pcs
+    var possibleCombinationSum = function(arr, n) {
+      if (arr.indexOf(n) >= 0) { return true; }
+      if (arr[0] > n) { return false; }
+      if (arr[arr.length - 1] > n) {
+        arr.pop();
+        return possibleCombinationSum(arr, n);
+      }
+      var listSize = arr.length, combinationsCount = (1 << listSize)
+      for (var i = 1; i < combinationsCount ; i++ ) {
+        var combinationSum = 0;
+        for (var j=0 ; j < listSize ; j++) {
+          if (i & (1 << j)) { combinationSum += arr[j]; }
+        }
+        if (n === combinationSum) { return true; }
+      }
+      return false;
+    };
+
     var StarsFrame = React.createClass({
       render: function () {
         var stars = [];
@@ -105,6 +124,7 @@
         return (
           <div className="well text-center">
             <h2>{this.props.doneStatus}</h2>
+            <button className="btn btn-default" onClick={this.props.resetGame}>Play again</button>
           </div>
         );
       }
@@ -122,12 +142,15 @@
           ,doneStatus: null
         }
       },
+      resetGame: function() {
+        this.replaceState(this.getInitialState());
+      },
       randomNumber: function() {
         return Math.floor(Math.random()*9) + 1;
       },
       selectedNumber: function(clickedNumber) {
         //避免選過的數字被重覆選擇
-        if (this.state.selectedNumbers.indexOf(clickedNumber) < 0) {
+        if ((this.state.selectedNumbers.indexOf(clickedNumber) < 0) && (this.state.usedNumbers.indexOf(clickedNumber) < 0)) {
           this.setState({selectedNumbers: this.state.selectedNumbers.concat(clickedNumber),correct:null})  
         }
       },
@@ -158,7 +181,32 @@
           ,selectedNumbers : []
           ,correct : null
           ,numberOfStars : this.randomNumber()
+        }, function() {
+          this.updateDoneStatus();
         });
+      },
+      possibleSolution: function() {
+        var numberOfStars = this.state.numberOfStars
+            , possibleNumbers = []
+            , usedNumbers = this.state.usedNumbers;
+            
+            for (var i=1; i<=9;i++) {
+              if (usedNumbers.indexOf(i) < 0) {
+                possibleNumbers.push(i);
+              }
+            }
+            console.log(usedNumbers);
+            return possibleCombinationSum(possibleNumbers, numberOfStars);
+      },
+      updateDoneStatus: function() {
+        if (this.state.usedNumbers.length === 9) {
+          this.setState({doneStatus: 'Done. Nice!'})
+          return;
+        }
+        
+        if (this.state.redraws === 0 && !this.possibleSolution()) {
+          this.setState({doneStatus: 'Game Over!'})
+        }
       },
       redraw: function() {
         if (this.state.redraws > 0) {
@@ -167,9 +215,10 @@
             ,redraws: this.state.redraws - 1
             ,correct : null
             ,numberOfStars : this.randomNumber()
+          }, function() {
+            this.updateDoneStatus();
           });
         }
-
       },
       render: function () {
         var selectedNumbers = this.state.selectedNumbers
@@ -181,7 +230,7 @@
             ,bottomFrame;
             
         if (doneStatus) {
-          buttomFrame = <DoneFrame doneStatus={doneStatus}/>;
+          buttomFrame = <DoneFrame doneStatus={doneStatus} resetGame={this.resetGame}/>;
         }
         else {
           buttomFrame = <NumberFrame selectedNumbers={selectedNumbers} selectedNumber={this.selectedNumber} usedNumbers={usedNumbers}/>;
