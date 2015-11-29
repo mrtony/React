@@ -142,9 +142,11 @@
           ,doneStatus: null
         }
       },
+      //25.設計`Play Again`機制. 在done-frame中加入play again button. 在按了它後, 會執行`this.replaceState(this.getInitialState());`, 它會清除掉所有的state重置後重新執行.
       resetGame: function() {
         this.replaceState(this.getInitialState());
       },
+      //產生star亂數
       randomNumber: function() {
         return Math.floor(Math.random()*9) + 1;
       },
@@ -165,15 +167,18 @@
         
         this.setState({selectedNumbers: selectedNumbers, correct:null});
       },
+      //14. 配合checkAnswer做檢查, 算出被拉到answer-frame中數字的加總
       sumOfSelectedNumbers: function() {
           return this.state.selectedNumbers.reduce(function(p,n) {
             return p+n;
           }, 0);
       },
+      //14. 在=的button被click後檢查answer. 在Game中加入checkAnswer, 加入correct的資料, 它也會pass到button-frame
       checkAnswer: function() {
         var correct = (this.state.numberOfStars === this.sumOfSelectedNumbers());
         this.setState({correct: correct});
       },
+      //18. 加入acceptAnswer, 並新增usedNumbers的array記錄已用過的數字, 並格式化用過的數字有不同的樣式, acceptAnswer同時會將使用過的number搬入usedNumbers, 並將correct, selectedNumbers, numberOfStars重新設定
       acceptAnswer: function() {
         var usedNumbers = this.state.usedNumbers.concat(this.state.selectedNumbers);
         this.setState({
@@ -185,6 +190,7 @@
           this.updateDoneStatus();
         });
       },
+      //23. 
       possibleSolution: function() {
         var numberOfStars = this.state.numberOfStars
             , possibleNumbers = []
@@ -198,6 +204,7 @@
             console.log(usedNumbers);
             return possibleCombinationSum(possibleNumbers, numberOfStars);
       },
+      //23. 如何結束game? 設計一個updateDoneStatus, 內容是檢查usedNumbers的9個數字都被用了(length=9). 另一個是resraws次數為0且沒有可能的數字組合可用. 會用到`https://gist.github.com/samerbuna/aa1f011a6e42d6deba46`的`possibleCombinationSum(array, number)`,它會去判斷傳入的數字陣列中, 是否有可能組合出number的數字.
       updateDoneStatus: function() {
         if (this.state.usedNumbers.length === 9) {
           this.setState({doneStatus: 'Done. Nice!'})
@@ -208,6 +215,7 @@
           this.setState({doneStatus: 'Game Over!'})
         }
       },
+      //20. 當沒有數字可以再選時要如何重新game? 在button-frame加入一個button做redraw. 只有usedNumbers不清除. 所以可以一直redraw直到全部數字用完.
       redraw: function() {
         if (this.state.redraws > 0) {
           this.setState({
